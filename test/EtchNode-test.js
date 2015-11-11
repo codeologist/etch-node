@@ -94,7 +94,7 @@
 
             node.addEventListener(1, "custom", function () {
                 if (count === 1) {
-                    assert(false, "count was 1, meaning");
+                    assert(false, "count was 1, meaning this triggered last");
                 }
                 count++;
             });
@@ -112,28 +112,29 @@
             }, 0);
         });
 
-        //it('should prevent default event from triggering', function(done){
-        //
-        //    var node = new EtchNode();
-        //    var count = 0;
-        //
-        //    node.addEventListener( 1, "custom", function( e ){
-        //        e.preventDefault();
-        //    });
-        //
-        //    node.addEventListener( 1, "custom", function(){
-        //        assert(false);
-        //    }, true );
-        //
-        //
-        //    node.triggerEvent("custom", node.createEventObject() );
-        //
-        //    setTimeout( function(){
-        //        assert.equal( count, 2 );
-        //        done();
-        //    }, 0 );
-        //
-        //});
+        it('should prevent default event from triggering', function(done){
+
+            var node = new EtchNode();
+            var count = 0;
+
+            node.addEventListener( 1, "custom", function( e ){
+                count++;
+                e.preventDefault();
+            });
+
+            node.addEventListener( 1, "custom", function(){
+                assert(false);
+            }, true );
+
+
+            node.triggerEvent("custom", node.createEventObject() );
+
+            setTimeout( function(){
+                assert.equal( count, 1 );
+                done();
+            }, 0 );
+
+        });
 
 
         it('should trigger the same event multiple times if it is added multiple times', function(done){

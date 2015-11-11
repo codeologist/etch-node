@@ -6,6 +6,7 @@
 [2K[0G  [32m  ✓[0m[90m should only trigger the requested event[0m
 [2K[0G  [32m  ✓[0m[90m should only trigger an event the repeat number of times[0m
 [2K[0G  [32m  ✓[0m[90m should trigger default events last, no matter the order they were added[0m
+[2K[0G  [32m  ✓[0m[90m should prevent default event from triggering[0m
 [2K[0G  [32m  ✓[0m[90m should trigger the same event multiple times if it is added multiple times[0m
 [2K[0G  [32m  ✓[0m[90m should remove a specific event[0m
 [2K[0G  [32m  ✓[0m[90m should remove a group of events[0m
@@ -15,5 +16,5 @@
 [2K[0G  [32m  ✓[0m[90m should remove all default events[0m
 
 
-[92m [0m[32m 12 passing[0m[90m (33ms)[0m
+[92m [0m[32m 13 passing[0m[90m (33ms)[0m
 

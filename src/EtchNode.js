@@ -6,39 +6,37 @@
         Object.observe( this, this.triggerEvent.bind( this, "change", null ) );
     }
 
-    function EventObject() {
-
+    function EtchEventObject(){
+        this.isDefaultPrevented = false;
     }
 
-    EventObject.prototype.preventDefault = function () {
-    }
+    EtchEventObject.prototype.preventDefault = function(){
+        this.isDefaultPrevented = true;
+    };
+
     EtchNode.prototype = {
         createEventObject: function(){
-            return {
-                preventDefault: function () {
-
-                }
-            };
+            return new EtchEventObject();
         },
-        addEventListener: function (repeat, type, callback, defaultSwitch) {
+        addEventListener:function( repeat, type, callback, defaultSwitch ){
             this.eventListeners.push({
                 type:type,
                 repeat:repeat,
-                callback: callback,
+                callback:callback,
                 default: defaultSwitch
             });
         },
-        removeDefaultEventListener: function (type) {
-            this.eventListeners.forEach(function (event, i) {
+        removeDefaultEventListener:function( type ){
+            this.eventListeners.forEach( function( event, i ){
 
-                if (event.type === type && event.default) {
+                if ( event.type === type && event.default ){
                     delete this.eventListeners[i];
                 }
 
-                if (type === undefined && event.default) {
+                if ( type === undefined && event.default ){
                     delete this.eventListeners[i];
                 }
-            }, this);
+            }, this );
         },
         removeEventListener:function( type, callback ){
             this.eventListeners.forEach( function( event, i ){
@@ -47,32 +45,50 @@
                     delete this.eventListeners[i];
                 }
 
-                if (callback === undefined && event.type === type && !event.default) {
+                if ( callback === undefined && event.type === type && !event.default ){
                     delete this.eventListeners[i];
                 }
 
-                if (type === undefined && !event.default) {
+                if ( type === undefined && !event.default ){
                     delete this.eventListeners[i];
                 }
             }, this );
         },
         triggerEvent:function( type, eventObject ){
 
-            var evschedule = [];
+            var userEventSchedule = [];
+            var defaultEventSchedule = [];
+
+            if ( !eventObject ){
+                eventObject = new EtchEventObject();
+            }
 
             this.eventListeners.forEach( function( event ){
-                if ( event.repeat && event.type === type ){
-                    evschedule.push(event);
+                if ( event.repeat && event.type === type ) {
+                    if (event.default) {
+                        defaultEventSchedule.push(event);
+                    } else {
+                        userEventSchedule.push(event);
+                    }
                 }
             });
 
-            evschedule.sort(function (a, b) {
-                return a.default ? 1 : -1;
-            });
+            userEventSchedule.forEach( function( event ){
+                process.nextTick( event.callback.bind( this, eventObject ) );
+                event.repeat--;
 
-            evschedule.forEach(function (event) {
-                    process.nextTick( event.callback.bind( this, eventObject ) );
-                    event.repeat--;
+            }, this );
+
+
+            defaultEventSchedule.forEach( function( event ){
+                process.nextTick( function( eventObject, callback ) {
+
+                    if ( eventObject.isDefaultPrevented === false ){
+                        callback.call( this, eventObject );
+                    }
+
+                }.bind( this, eventObject, event.callback ));
+                event.repeat--;
 
             }, this );
         }
