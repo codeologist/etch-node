@@ -5,19 +5,15 @@
 [2K[0G  [32m  ✓[0m[90m should have basic event system[0m
 [2K[0G  [32m  ✓[0m[90m should only trigger the requested event[0m
 [2K[0G  [32m  ✓[0m[90m should only trigger an event the repeat number of times[0m
+[2K[0G  [32m  ✓[0m[90m should trigger default events last, no matter the order they were added[0m
 [2K[0G  [32m  ✓[0m[90m should trigger the same event multiple times if it is added multiple times[0m
-[2K[0G  [32m  ✓[0m[90m should remove an individual event[0m
+[2K[0G  [32m  ✓[0m[90m should remove a specific event[0m
 [2K[0G  [32m  ✓[0m[90m should remove a group of events[0m
-[2K[0G  [32m  ✓[0m[90m should remove all events[0m
-[2K[0G  [31m  1) shouldn't remove default events[0m
+[2K[0G  [32m  ✓[0m[90m should remove all events that are not default events[0m
+[2K[0G  [32m  ✓[0m[90m should not remove default events[0m
+[2K[0G  [32m  ✓[0m[90m should remove a specific default event[0m
+[2K[0G  [32m  ✓[0m[90m should remove all default events[0m
 
 
-[92m [0m[32m 8 passing[0m[90m (2s)[0m
-[31m  1 failing[0m
-
-[0m  1) EtchNode Basic Functionality Tests shouldn't remove default events:
-[0m[31m     Error: timeout of 2000ms exceeded. Ensure the done() callback is being called in this test.[0m[90m
-  
-[0m
-
+[92m [0m[32m 12 passing[0m[90m (33ms)[0m
 

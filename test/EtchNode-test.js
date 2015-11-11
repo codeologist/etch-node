@@ -58,6 +58,7 @@
             node.addEventListener( 1, "custom", function(){
                 assert( false );
             });
+
             node.addEventListener( 1, "custom2", function(){
                 done();
             });
@@ -85,6 +86,56 @@
             }, 0 );
         });
 
+
+        it('should trigger default events last, no matter the order they were added', function (done) {
+
+            var node = new EtchNode();
+            var count = 0;
+
+            node.addEventListener(1, "custom", function () {
+                if (count === 1) {
+                    assert(false, "count was 1, meaning");
+                }
+                count++;
+            });
+
+            node.addEventListener(1, "custom", function () {
+                count++;
+            }, true);
+
+
+            node.triggerEvent("custom");
+
+            setTimeout(function () {
+                assert.equal(count, 2);
+                done();
+            }, 0);
+        });
+
+        //it('should prevent default event from triggering', function(done){
+        //
+        //    var node = new EtchNode();
+        //    var count = 0;
+        //
+        //    node.addEventListener( 1, "custom", function( e ){
+        //        e.preventDefault();
+        //    });
+        //
+        //    node.addEventListener( 1, "custom", function(){
+        //        assert(false);
+        //    }, true );
+        //
+        //
+        //    node.triggerEvent("custom", node.createEventObject() );
+        //
+        //    setTimeout( function(){
+        //        assert.equal( count, 2 );
+        //        done();
+        //    }, 0 );
+        //
+        //});
+
+
         it('should trigger the same event multiple times if it is added multiple times', function(done){
 
             var node = new EtchNode();
@@ -96,16 +147,19 @@
             node.addEventListener( 1, "custom", function(){
                 count++;
             });
+            node.addEventListener(1, "custom", function () {
+                count++;
+            }, true);
 
             node.triggerEvent("custom");
 
             setTimeout( function(){
-                assert.equal( count, 2 );
+                assert.equal(count, 3);
                 done();
             }, 0 );
         });
 
-        it('should remove an individual event', function(done){
+        it('should remove a specific event', function (done) {
 
             var node = new EtchNode();
             var func = function(){
@@ -142,7 +196,7 @@
             }, 0 );
         });
 
-        it('should remove all events', function(done){
+        it('should remove all events that are not default events', function (done) {
 
             var node = new EtchNode();
 
@@ -167,7 +221,7 @@
             }, 0 );
         });
 
-        it("shouldn't remove default events", function(done){
+        it("should not remove default events", function (done) {
 
             var node = new EtchNode();
 
@@ -178,6 +232,44 @@
             node.removeEventListener();
             node.triggerEvent("default");
 
+        });
+
+        it("should remove a specific default event", function (done) {
+
+            var node = new EtchNode();
+
+
+            node.addEventListener(1, "default", function () {
+                assert(false);
+            }, true);
+
+            node.removeDefaultEventListener("default");
+            node.triggerEvent("default");
+            setTimeout(function () {
+                done();
+            }, 0);
+        });
+
+        it("should remove all default events", function (done) {
+
+            var node = new EtchNode();
+
+
+            node.addEventListener(1, "default", function () {
+                assert(false);
+            }, true);
+
+            node.addEventListener(1, "onclick", function () {
+                assert(false);
+            }, true);
+
+            node.removeDefaultEventListener();
+            node.triggerEvent("default");
+            node.triggerEvent("onclick");
+
+            setTimeout(function () {
+                done();
+            }, 0);
         });
     });
 

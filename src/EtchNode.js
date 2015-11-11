@@ -6,38 +6,74 @@
         Object.observe( this, this.triggerEvent.bind( this, "change", null ) );
     }
 
+    function EventObject() {
+
+    }
+
+    EventObject.prototype.preventDefault = function () {
+    }
     EtchNode.prototype = {
         createEventObject: function(){
-            return {};
+            return {
+                preventDefault: function () {
+
+                }
+            };
         },
-        addEventListener:function( repeat, type, callback ){
+        addEventListener: function (repeat, type, callback, defaultSwitch) {
             this.eventListeners.push({
                 type:type,
                 repeat:repeat,
-                callback:callback
+                callback: callback,
+                default: defaultSwitch
             });
+        },
+        removeDefaultEventListener: function (type) {
+            this.eventListeners.forEach(function (event, i) {
+
+                if (event.type === type && event.default) {
+                    delete this.eventListeners[i];
+                }
+
+                if (type === undefined && event.default) {
+                    delete this.eventListeners[i];
+                }
+            }, this);
         },
         removeEventListener:function( type, callback ){
             this.eventListeners.forEach( function( event, i ){
+
                 if ( typeof callback === "function" && event.callback === callback && event.type === type ){
                     delete this.eventListeners[i];
                 }
 
-                if ( callback === undefined && event.type === type ){
+                if (callback === undefined && event.type === type && !event.default) {
                     delete this.eventListeners[i];
                 }
 
-                if ( type === undefined ){
+                if (type === undefined && !event.default) {
                     delete this.eventListeners[i];
                 }
             }, this );
         },
         triggerEvent:function( type, eventObject ){
+
+            var evschedule = [];
+
             this.eventListeners.forEach( function( event ){
                 if ( event.repeat && event.type === type ){
+                    evschedule.push(event);
+                }
+            });
+
+            evschedule.sort(function (a, b) {
+                return a.default ? 1 : -1;
+            });
+
+            evschedule.forEach(function (event) {
                     process.nextTick( event.callback.bind( this, eventObject ) );
                     event.repeat--;
-                }
+
             }, this );
         }
     };
