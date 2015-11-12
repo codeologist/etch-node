@@ -116,6 +116,11 @@
 
             constructors.forEach( function( constructor ){
                 Object.keys( constructor.prototype ).forEach( function( meth ){
+
+                    if ( meth in FauxNode.prototype ){
+                        FauxNode.prototype["___"+meth+"___"] = FauxNode.prototype[meth];
+                    }
+
                     FauxNode.prototype[meth]= constructor.prototype[meth];
                 });
             }, this);

@@ -37,6 +37,32 @@
 
             done();
         });
+        it('should override existing methods', function(done) {
+
+            function AAA(){
+
+            }
+
+            AAA.prototype.createEventObject = function(){
+
+                var obj = this.___createEventObject___();
+
+                obj.extended = 99;
+
+                return obj;
+            };
+
+            var ExtendedNode = EtchNode.extend( AAA );
+
+            assert( ExtendedNode.prototype.createEventObject );
+            assert( ExtendedNode.prototype.___createEventObject___ );
+
+            var node = new ExtendedNode();
+
+            assert.equal( node.createEventObject().extended, 99 );
+
+            done();
+        });
 
         it('should have basic event system', function(done){
 
