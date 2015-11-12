@@ -37,6 +37,27 @@
 
             done();
         });
+
+        it('should return a different constructor every time', function(done) {
+
+            function AAA(){
+
+            }
+
+            AAA.prototype.xxx = function(){
+            };
+
+
+            var ExtendedNode1 = EtchNode.extend( AAA );
+            var ExtendedNode2 = EtchNode.extend( AAA );
+
+            assert( ExtendedNode1 !== ExtendedNode2);
+
+            done();
+        });
+
+
+
         it('should override existing methods', function(done) {
 
             function AAA(){
@@ -61,19 +82,18 @@
 
                 var obj = this.___createEventObject___();
 
-                obj.extended = 99;
+                obj.extended = 22;
 
                 return obj;
             };
 
             var ExtendedNode = EtchNode.extend( AAA, BBB );
-
             assert( ExtendedNode.prototype.createEventObject );
             assert( ExtendedNode.prototype.___createEventObject___ );
 
             var node = new ExtendedNode();
 
-            assert.equal( node.createEventObject().extended, 99 );
+            assert.equal( node.createEventObject().extended, 22 );
 
             done();
         });

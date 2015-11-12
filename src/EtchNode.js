@@ -98,42 +98,36 @@
 
         value:function(){
 
-            var constructors = Array.prototype.slice.call( arguments, 0 );
 
-            function ext(){
+            var constructors = Array.prototype.slice.call( arguments, 0 );
+            constructors.unshift(EtchNode);
+
+            var ext = function(){
                 var args = arguments;
                 constructors.forEach( function( constructor ){
                     constructor.apply( this, args );
                 }, this);
-            }
+            };
 
-            function FauxNode(){
-                EtchNode.apply( this, arguments );
+            var FauxNode = function(){
                 ext.apply( this, arguments );
-            }
-
-            FauxNode.prototype = EtchNode.prototype;
+            };
 
             constructors.forEach( function( constructor ){
                 Object.keys( constructor.prototype ).forEach( function( meth ){
-                    if ( meth in FauxNode.prototype  ){
 
-                        var Afunc = constructor.prototype[meth].toString();
-                        var Bfunc = FauxNode.prototype[meth].toString();
+                    var methodWillBeOverridden = meth in FauxNode.prototype;
+                    var methodAlreadyOverridden = ("___" + meth + "___") in FauxNode.prototype;
 
-                        if ( Bfunc.indexOf(  "___"+meth+"___" ) === -1 ){
-                            console.log("Recursion error whilst overriding constructor methods");
-                        }
-
-                        if ( Bfunc != Afunc && Bfunc.indexOf(  "___"+meth+"___" ) === -1  ) {
+                    if ( methodWillBeOverridden ){
+                        if (!methodAlreadyOverridden ){
                             Object.defineProperty(FauxNode.prototype, "___" + meth + "___", {
-                                configurable: true,
                                 value: FauxNode.prototype[meth]
                             });
                         }
                     }
-
                     FauxNode.prototype[meth]= constructor.prototype[meth];
+
                 });
             }, this);
 
