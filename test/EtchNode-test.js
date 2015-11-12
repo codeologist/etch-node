@@ -52,7 +52,21 @@
                 return obj;
             };
 
-            var ExtendedNode = EtchNode.extend( AAA );
+
+            function BBB(){
+
+            }
+
+            BBB.prototype.createEventObject = function(){
+
+                var obj = this.___createEventObject___();
+
+                obj.extended = 99;
+
+                return obj;
+            };
+
+            var ExtendedNode = EtchNode.extend( AAA, BBB );
 
             assert( ExtendedNode.prototype.createEventObject );
             assert( ExtendedNode.prototype.___createEventObject___ );
@@ -63,6 +77,45 @@
 
             done();
         });
+
+
+
+        it('should saftey check any method overrides for recursion', function(done) {
+
+            function AAA(){
+
+            }
+
+            AAA.prototype.createEventObject = function(){
+
+                var obj = this.___createEventObject___();
+
+                obj.extended = 99;
+
+                return obj;
+            };
+
+
+            function CCC(){
+
+            }
+
+            CCC.prototype.createEventObject = function(){
+                var obj = this.___createEventObject___();
+                obj.extended = 99;
+                return obj;
+            };
+
+            try {
+                EtchNode.extend( AAA, CCC );
+            } catch ( e ){
+                assert( e.message == "Recursion errror whilst overriding constructor methods" );
+            } finally{
+                done();
+            }
+        });
+
+
 
         it('should have basic event system', function(done){
 

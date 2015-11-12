@@ -116,9 +116,21 @@
 
             constructors.forEach( function( constructor ){
                 Object.keys( constructor.prototype ).forEach( function( meth ){
+                    if ( meth in FauxNode.prototype  ){
 
-                    if ( meth in FauxNode.prototype ){
-                        FauxNode.prototype["___"+meth+"___"] = FauxNode.prototype[meth];
+                        var Afunc = constructor.prototype[meth].toString();
+                        var Bfunc = FauxNode.prototype[meth].toString();
+
+                        if ( Bfunc.indexOf(  "___"+meth+"___" ) === -1 ){
+                            console.log("Recursion error whilst overriding constructor methods");
+                        }
+
+                        if ( Bfunc != Afunc && Bfunc.indexOf(  "___"+meth+"___" ) === -1  ) {
+                            Object.defineProperty(FauxNode.prototype, "___" + meth + "___", {
+                                configurable: true,
+                                value: FauxNode.prototype[meth]
+                            });
+                        }
                     }
 
                     FauxNode.prototype[meth]= constructor.prototype[meth];
